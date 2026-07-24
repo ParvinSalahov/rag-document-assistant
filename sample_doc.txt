@@ -1,0 +1,8 @@
+DevJoint AI Internship Program - Week 2 Guidelines.
+
+The Retrieval-Augmented Generation (RAG) system is an architecture that optimizes the output of a Large Language Model (LLM), so it references an authoritative knowledge base outside its training data sources before generating a response.
+
+Chunking Strategy Guidelines:
+When processing documents, text should be split into smaller chunks. For optimal results, use a chunk size of 200 characters with an overlap of 40 characters. The overlap ensures that semantic context is preserved across boundaries so that no crucial definition or logic is split midway.
+
+If a user asks about a topic that is not mentioned in these documents, the system must strictly state that the information is not available in the provided context, preventing hallucination.
