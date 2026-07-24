@@ -1,3 +1,4 @@
+Markdown
 # Sənəd Əsaslı Suallara Cavab Verən RAG Sistemi (Həftə 2)
 
 Bu layihə təcrübə proqramının (internship) 2-ci həftə tapşırığı çərçivəsində yaradılmışdır. Layihədə LangChain, ChromaDB vektor bazası və OpenRouter API (GPT-4o-mini) vasitəsilə sıfırdan kamil RAG (Retrieval-Augmented Generation) sistemi reallaşdırılmışdır.
@@ -14,7 +15,6 @@ Layihə qovluğunda terminalı açın və sisteminizə uyğun olaraq aşağıdak
 * **Virtual mühitin yaradılması:**
   ```bash
   python -m venv venv
-
 Aktivləşdirilməsi (Windows - PowerShell üçün):
 
 PowerShell
@@ -60,14 +60,10 @@ text-embedding-3-small modeli vasitəsilə vektorlaşdırılaraq lokal ChromaDB 
 Checkpoint 5: Mənbə İstinadı ilə Cavab Generasiyası (Source Citation)
 Sistem cavab generasiya edərkən istifadə etdiyi chunk-ların mənbəsini və daxilindəki mətni loglayır:
 
-Terminal Çıxışı:
+Real Terminal Çıxışı (Console Log):
 
 Plaintext
-✅ [CHECKPOINT 1] OpenRouter API key loaded successfully.
-✅ [CHECKPOINT 2] Document loaded successfully.
-✅ [CHECKPOINT 3] Document split into chunks.
-✅ [CHECKPOINT 4] Vector store (ChromaDB) created and indexed successfully.
-✅ [CHECKPOINT 5] RAG chain successfully constructed.
+(venv) PS C:\Users\HUAWEI\Desktop\devjoint_intern\week2_rag_system> python main.py
 
 --- RAG RESPONSE WITH SOURCE CITATIONS ---
 Question: What does the DevJoint Intern RAG System do?
@@ -76,8 +72,8 @@ Generated Answer:
 The DevJoint Intern RAG System processes student tasks and generates responses using RAG architecture.
 
 📌 Retrieved Sources / Chunks:
-  [1] Source: C:\Users\...\week2_rag_system\data.txt
-      Content snippet: DevJoint Intern RAG System: This system processes student tasks...
+  [1] Source: C:\Users\HUAWEI\Desktop\devjoint_intern\week2_rag_system\data.txt
+      Content snippet: DevJoint Intern RAG System: This system processes student tasks and generates responses using RAG ar...
 🛡️ "Sənədlərdə Yoxdur" Halının İdarə Olunması (Checkpoint 6 - Fallback)
 RAG sistemində LLM-in hallüsinasiya etməsinin (özündən uydurma məlumatlar verməsinin) qarşısını almaq üçün aşağıdakı tədbirlər görülmüşdür:
 
@@ -94,4 +90,4 @@ week2_rag_system/
 ├── .gitignore            # Hansı faylların Git-ə gitməyəcəyini təyin edən tənzimləmə
 ├── data.txt              # RAG sisteminin oxuduğu baza mətn sənədi
 ├── README.md             # Layihə haqqında ümumi məlumat və təlimat faylı
-└── main.py               # Bütün RAG checkpoint-lərini icra edən əsas Python kodi
+└── main.py               # Bütün RAG checkpoint-lərini icra edən əsas Python kodu
