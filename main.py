@@ -8,10 +8,9 @@ from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
 
 # =====================================================================
-# CHECKPOINT 1: READ OPENROUTER API KEY FROM .ENV FILE
+# CHECKPOINT 1: READ OPENROUTER API KEY
 # =====================================================================
 BASE_DIR = Path(__file__).resolve().parent
 env_path = BASE_DIR / ".env"
@@ -28,44 +27,28 @@ if env_path.exists():
                     break
 
 if not api_key:
-    print("❌ [CHECKPOINT 1 ERROR] OPENROUTER_API_KEY not found in .env file!")
+    print("❌ [CHECKPOINT 1 ERROR] OPENROUTER_API_KEY not found!")
     exit()
 
-# Configure system environment variables for OpenRouter
 os.environ["OPENAI_API_KEY"] = api_key
 os.environ["OPENAI_API_BASE"] = "https://openrouter.ai/api/v1"
 
-print("✅ [CHECKPOINT 1] OpenRouter API key loaded successfully.")
-
-
 # =====================================================================
-# CHECKPOINT 2: DOCUMENT LOADING
+# CHECKPOINT 2 & 3: LOADING & SPLITTING
 # =====================================================================
 doc_path = BASE_DIR / "data.txt"
-
-# If data.txt does not exist, create a sample file for testing
 if not doc_path.exists():
     with open(doc_path, "w", encoding="utf-8") as f:
         f.write("DevJoint Intern RAG System: This system processes student tasks and generates responses using RAG architecture.")
 
 loader = TextLoader(str(doc_path), encoding="utf-8")
 documents = loader.load()
-print(f"✅ [CHECKPOINT 2] Document loaded successfully. Total characters: {len(documents[0].page_content)}")
 
-
-# =====================================================================
-# CHECKPOINT 3: TEXT SPLITTING
-# =====================================================================
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=500,
-    chunk_overlap=50
-)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 splits = text_splitter.split_documents(documents)
-print(f"✅ [CHECKPOINT 3] Document split into {len(splits)} chunks.")
-
 
 # =====================================================================
-# CHECKPOINT 4: EMBEDDINGS AND VECTOR STORE (ChromaDB)
+# CHECKPOINT 4: EMBEDDINGS & VECTORSTORE
 # =====================================================================
 embeddings = OpenAIEmbeddings(
     model="text-embedding-3-small",
@@ -73,14 +56,11 @@ embeddings = OpenAIEmbeddings(
     openai_api_base="https://openrouter.ai/api/v1"
 )
 
-# Initialize in-memory vector database
 vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings)
 retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
-print("✅ [CHECKPOINT 4] Vector store (ChromaDB) created and indexed successfully.")
-
 
 # =====================================================================
-# CHECKPOINT 5: LLM AND PROMPT TEMPLATE SETUP (RAG Chain)
+# CHECKPOINT 5: GENERATION WITH SOURCE CITATION (MƏNBƏ İSTİNADI)
 # =====================================================================
 llm = ChatOpenAI(
     model="openai/gpt-4o-mini",
@@ -89,9 +69,7 @@ llm = ChatOpenAI(
     temperature=0
 )
 
-# Prompt template enforcing context-based answers
-template = """Answer the question based only on the following context.
-If you do not know the answer, say that you don't know, do not try to make up an answer.
+template = """Answer the question based only on the provided context.
 
 Context:
 {context}
@@ -102,28 +80,26 @@ Answer:"""
 
 prompt = ChatPromptTemplate.from_template(template)
 
-def format_docs(docs):
-    return "\n\n".join(doc.page_content for doc in docs)
-
-# LCEL (LangChain Expression Language) pipeline construction
-rag_chain = (
-    {"context": retriever | format_docs, "question": RunnablePassthrough()}
-    | prompt
-    | llm
-    | StrOutputParser()
-)
-
-print("✅ [CHECKPOINT 5] RAG chain successfully constructed.")
-
-
-# =====================================================================
-# CHECKPOINT 6: RAG PIPELINE EXECUTION & TEST
-# =====================================================================
-if __name__ == "__main__":
-    print("\n--- RAG PIPELINE EXECUTION TEST ---")
-    query = "What does the DevJoint Intern RAG System do?"
-    print(f"Question: {query}\n")
+def ask_rag_with_sources(query: str):
+    # 1. Relevant chunk-ları axtarıb tapırıq
+    retrieved_docs = retriever.invoke(query)
     
-    response = rag_chain.invoke(query)
-    print("🤖 Model Response:")
-    print(response)
+    # 2. Chunk-ların mətnini birşləşdiririk
+    context_text = "\n\n".join(doc.page_content for doc in retrieved_docs)
+    
+    # 3. LLM-ə müraciət edirik
+    formatted_prompt = prompt.format(context=context_text, question=query)
+    response = llm.invoke(formatted_prompt)
+    
+    print("\n--- RAG RESPONSE WITH SOURCE CITATIONS ---")
+    print(f"Question: {query}")
+    print(f"\nGenerated Answer:\n{response.content}")
+    
+    print("\n📌 Retrieved Sources / Chunks:")
+    for idx, doc in enumerate(retrieved_docs, 1):
+        source_file = doc.metadata.get("source", "Unknown")
+        print(f"  [{idx}] Source: {source_file}")
+        print(f"      Content snippet: {doc.page_content[:100]}...\n")
+
+if __name__ == "__main__":
+    ask_rag_with_sources("What does the DevJoint Intern RAG System do?")
