@@ -1,22 +1,278 @@
-# DevJoint Intern Program & RAG System Documentation
+Introduction
+In the previous article, we explored the four main types of machine learning: supervised, unsupervised, semi-supervised, and reinforcement learning. We learned how each type differs based on the data available and the way the model learns.
 
-## 1. Overview
-The DevJoint Intern RAG System is designed to streamline academic and practical tasks for AI Engineering interns. Built on a Retrieval-Augmented Generation (RAG) architecture, it acts as a contextual knowledge assistant that retrieves relevant course documentation, project guidelines, and technical workflows to answer intern queries accurately without hallucination.
+Understanding these categories helps us choose the right approach for a problem, but it doesn’t answer another important question:
 
-## 2. System Architecture & Components
-- Document Loader: Utilizes LangChain's TextLoader to ingest structured and unstructured markdown or text documentation.
-- Text Splitter: Implements RecursiveCharacterTextSplitter with a chunk size of 500 characters and an overlap of 50 characters to maintain semantic context across chunks.
-- Vector Database: Uses Chroma DB to store document embeddings locally.
-- Embedding Model: Leverages OpenAI's text-embedding-3-small via OpenRouter API for efficient vector conversions.
-- Large Language Model: Powered by GPT-4o-Mini via OpenRouter to generate precise answers based strictly on retrieved context.
+What does a real machine learning project actually look like?
 
-## 3. Internship Modules & Schedule
-- Week 1: Introduction to LLMs, Prompt Engineering, and API Integrations (OpenRouter, FastAPIs).
-- Week 2: Building RAG Systems, Vector Databases (Chroma), Chunking Strategies, and Source Citation.
-- Week 3: Multi-LLM Evaluation Pipelines, Automated Workflows (Pipedream/Make.com), and Testing.
-- Week 4: Final Capstone Project Presentation and Performance Checkpoint Review.
+Building a machine learning model involves much more than selecting an algorithm. Before a model can make predictions, we need to understand the problem, collect and prepare the data, train and evaluate the model, and finally deploy it for real-world use.
 
-## 4. Operational Guidelines & Best Practices
-- Temperature Setting: Always set model temperature to 0 for factual QA tasks to avoid hallucinated outputs.
-- Search Parameters: The default retriever searches for top k=2 most relevant document chunks per query.
-- Strict Context Adherence: If a question cannot be answered using the provided context, the system must explicitly state that the information is unavailable rather than generating external assumptions.
+In this article, we’ll walk through the complete machine learning workflow using a telecom customer churn prediction project. Rather than looking at each step in isolation, we’ll see how they fit together to transform raw data into a model that can help a business make better decisions.
+
+By the end of this article, you’ll understand the major phases of a machine learning project and how they connect to form a complete end-to-end workflow.
+
+The Machine Learning Workflow at a Glance
+Before we dive into each step, let’s look at the complete machine learning workflow.
+
+Every machine learning project follows a series of stages, starting with a business problem and ending with predictions that help organizations make better decisions.
+
+Press enter or click to view image in full size
+
+Machine Learning Workflow
+Although the specific tools and algorithms may vary from one project to another, the overall workflow remains largely the same.
+
+In this article, we’ll follow each of these steps using a real-world telecom customer churn prediction project.
+
+What Happens at Each Step?
+Let’s briefly understand what each stage accomplishes before exploring them in detail.
+
+Business Problem
+Clearly identify the business problem you want to solve and determine whether machine learning is the right approach.
+Data Collection
+Gather the historical data that will be used to train the machine learning model.
+Data Preparation
+Clean, transform, and organize the data so it is ready for model training. This phase may include data cleaning, exploratory data analysis (EDA), feature engineering, and splitting the dataset.
+Modeling
+Select an appropriate machine learning algorithm and train it using the prepared data.
+Evaluation
+Measure the model's performance using unseen data to ensure it makes reliable predictions.
+Deployment & Monitoring
+Deploy the trained model to a real-world environment, make predictions on new data, and continuously monitor its performance over time.
+Our Example Project
+To understand how these stages fit together, we’ll use a real-world machine learning project.
+
+Imagine you’re working as a data scientist for a telecommunications company.
+
+Every month, some customers cancel their subscriptions and switch to competitors. Since retaining existing customers is often less expensive than acquiring new ones, the company wants to identify customers who are likely to leave before they actually do.
+
+Our goal is simple:
+
+Can we predict whether a customer will churn?
+
+Throughout this article, we’ll use this problem to explore each stage of the machine learning workflow.
+
+Step 1: Business Problem
+Every machine learning project begins with a business problem.
+
+Our business problem is:
+
+A telecommunications company is experiencing a high number of customers canceling their subscriptions. Customer churn leads to lost revenue, and acquiring new customers is often more expensive than retaining existing ones. The company wants to reduce churn by identifying at-risk customers early so it can take proactive retention actions, such as offering discounts or personalized promotions.
+
+To help solve this business problem, we can formulate a machine learning problem:
+
+Can we predict which customers are likely to churn before they leave?
+
+This immediately tells us several things.
+
+Input
+Customer information
+
+Subscription length
+Frequency of use
+Age group
+…
+Output
+Will the customer churn?
+
+Yes
+No
+Because the output is one of two categories, this is a supervised classification problem.
+
+Customer Information
+        ↓
+Will Customer Churn?
+    Yes / No
+Step 2: Data Collection
+To train a machine learning model, we need historical data.
+
+Fortunately, the telecom company already has customer records.
+
+Our dataset is from an Iranian telecommunications company and it contains customer-level records collected over a 12-month period. It includes 3,150 observations, each representing an individual customer, with 13 attributes describing their usage patterns, service experience, and demographic characteristics.
+
+Press enter or click to view image in full size
+
+Screenshot of the Dataset (csv)
+Notice the final column.
+
+Churn is our label because we already know the correct answer for each customer.
+
+The remaining columns are the features that the model will use to learn.
+
+Why is Data Collection Important?
+A machine learning model can only learn from the data it is given. If the collected data is incomplete, inaccurate, or unrepresentative, the model’s predictions will also be unreliable. Collecting high-quality, relevant data provides the foundation for building an accurate and effective machine learning model.
+
+Step 3: Data Preparation
+Once we’ve collected the data, it isn’t immediately ready for machine learning.
+
+Real-world datasets often contain missing values, inconsistent formats, duplicate records, or irrelevant information. If we train a model using poor-quality data, the model will learn poor-quality patterns.
+
+This is why data preparation is one of the most important stages of every machine learning project.
+
+During this phase, data scientists transform raw data into a clean and structured dataset that is suitable for model training.
+
+Some common tasks performed during data preparation include:
+
+Cleaning missing or incorrect values
+Removing duplicate records
+Converting categorical variables into numerical values
+Creating new features (feature engineering)
+Performing exploratory data analysis (EDA)
+Splitting the dataset into training and testing sets
+Although these tasks may seem unrelated, they all have the same goal: to ensure the model learns from accurate and meaningful data.
+
+For our telecom customer churn project, we prepared the dataset before training the model by:
+
+Exploring the data to understand customer characteristics and identify potential relationships with churn
+Press enter or click to view image in full size
+
+Example Plots from Exploratory Data Analysis (EDA)
+Cleaning the data from missing and inconsistent values, removing dublicate records
+# Example Code Block from Data Cleaning 
+
+# check for dublicates
+dub = df.duplicated().sum()
+print("Dublicates:", dub)
+# remove dublicates
+df = df.drop_duplicates()
+df.duplicated().sum()
+df.shape
+Splitting the dataset into training and testing sets to evaluate the model fairly
+# Example Code Block from Train/Test Split
+
+from sklearn.model_selection import train_test_split
+
+# Features and target
+X = df.drop('Churn', axis=1)
+y = df['Churn']
+
+# Train-test split (70/30, stratified to keep churn ratio)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.3,
+    random_state=42,
+    stratify=y
+)
+
+X_train.shape, X_test.shape
+After completing these steps, the dataset was ready for machine learning.
+
+Why is Data Preparation Important?
+Raw data is rarely ready for machine learning. Cleaning, transforming, and organizing the data helps the model learn meaningful patterns instead of errors or inconsistencies. Well-prepared data leads to more accurate predictions and better overall model performance.
+
+Step 4: Modeling
+After the data has been prepared, it’s time to build the machine learning model.
+
+Subscribe to the Medium newsletter
+This stage involves selecting an appropriate machine learning algorithm and training it using the prepared data. During training, the algorithm analyzes the training data and learns patterns that can be used to make predictions on new, unseen data.
+
+The choice of algorithm depends on the problem being solved. For example, regression algorithms are used to predict numerical values, while classification algorithms are used to predict categories.
+
+Since our goal is to determine whether a customer will churn or not churn, this is a binary classification problem.
+
+For this project, we selected XGBoost, a powerful gradient boosting algorithm that is widely used in industry due to its strong predictive performance, ability to handle structured data, and robustness to missing values and complex relationships.
+
+During training, the model learns how different customer characteristics influence the likelihood of churn. For example, it may discover that customers who complained more are more likely to leave.
+
+The important point is that these relationships are not manually programmed. Instead, the algorithm discovers them automatically by learning from historical customer data.
+
+Press enter or click to view image in full size
+
+Model Training Diagram
+Note: At this stage, you don’t need to understand how XGBoost works internally. The important idea is that a machine learning algorithm learns patterns from historical data to create a trained model. In future articles, we’ll explore different algorithms — including Decision Trees, Random Forests, and XGBoost — in detail.
+
+Why is Modeling Important?
+The model is the core of every machine learning system. It transforms historical data into knowledge that can be applied to future data.
+
+However, a model is only as good as the data it learns from. Even the most advanced algorithm cannot compensate for poor-quality data. This is why data preparation and model training work hand in hand to produce reliable predictions.
+
+In the next step, we’ll evaluate how well the model performs and determine whether its predictions are reliable enough for real-world use.
+
+Step 5: Evaluation
+Training a machine learning model is only part of the process. Before using it in a real-world application, we need to determine whether it makes reliable predictions.
+
+This is the purpose of the evaluation stage.
+
+During evaluation, the trained model is tested using the testing dataset, which contains customer records the model has never seen before. This allows us to measure how well the model generalizes to new data rather than simply memorizing the training examples.
+
+Press enter or click to view image in full size
+
+Model Testing Diagram
+To evaluate our customer churn model, we used several performance metrics including:
+
+Accuracy — How often the model makes the correct prediction.
+Precision — Of the customers predicted to churn, how many actually churned?
+Recall — Of the customers who actually churned, how many did the model identify?
+F1-Score — A balanced measure that combines precision and recall.
+ROC-AUC — Measures how well the model distinguishes between customers who churn and those who do not.
+and Confusion Matrix — A table that summarizes the model’s predictions by comparing the predicted classes with the actual classes. It shows the numbers of true positives, true negatives, false positives, and false negatives, helping us understand the types of mistakes the model makes.
+
+
+Confusion Matrix Example
+Each metric provides a different perspective on the model’s performance. Together, they help us determine whether the model is reliable enough for real-world use.
+
+Why is Evaluation Important?
+Imagine a student who scores 100% on the homework questions they practiced but struggles on the final exam. Although they appeared to perform well during practice, they didn’t truly understand the material.
+
+Machine learning models can face the same problem. A model may perform extremely well on the training data but fail when presented with new, unseen data. This phenomenon is known as overfitting.
+
+By evaluating the model on a separate testing dataset, we can measure how well it generalizes to new data and determine whether it is ready for deployment.
+
+Step 6: Deployment & Monitoring
+After a model has been trained and evaluated, it can be deployed so it can make predictions on new, real-world data.
+
+Deployment is the process of making the trained model available for use. Instead of remaining on a data scientist’s computer, the model is integrated into an application, website, or business system where it can automatically generate predictions.
+
+For our customer churn project, the deployed model could analyze information about current customers and estimate the probability that each customer will leave the company. Customers identified as being at high risk of churning could then be targeted with personalized offers or retention campaigns.
+
+However, deployment is not the end of the machine learning lifecycle.
+
+Over time, customer behavior, market conditions, and business strategies may change. As a result, the model’s performance can gradually decline because the patterns it learned from historical data no longer reflect reality.
+
+To ensure the model continues to make reliable predictions, its performance should be monitored regularly. If the model’s accuracy begins to decrease, it may need to be retrained using more recent data.
+
+Deployment and monitoring help ensure that a machine learning model continues to provide value long after it has been developed.
+
+Why is Deployment & Monitoring Important?
+Building an accurate model is only valuable if it can be used to support real-world decisions. Deployment allows organizations to put machine learning into practice, while monitoring ensures that the model continues to perform well as data and business conditions evolve.
+
+The Complete Machine Learning Workflow
+Let’s put everything together.
+
+Every machine learning project follows a structured workflow that transforms a business problem into a deployed solution capable of making predictions on new data. While the specific techniques and algorithms may vary from project to project, the overall process remains largely the same.
+
+Throughout this article, we explored each stage of the workflow using a telecom customer churn prediction project. We started by understanding the business problem, collected and prepared the data, trained and evaluated a machine learning model, and finally deployed it to make predictions and support business decisions.
+
+The diagram below summarizes the complete machine learning workflow.
+
+
+ML Workflow Summary Diagram
+Key Takeaways
+Every machine learning project begins with a business problem, not with choosing an algorithm.
+Data preparation is often the most time-consuming stage and plays a crucial role in model performance.
+During modeling, the algorithm learns patterns from historical data to create a trained model.
+Evaluation helps determine whether the model can generalize to new, unseen data.
+Deployment and monitoring ensure the model continues to deliver value in real-world applications.
+Machine learning is an iterative process. As new data becomes available or business needs change, the workflow may be repeated to improve the model and maintain its performance.
+
+Related Resources
+Explore the Complete Project
+In this article, we focused on understanding the machine learning workflow at a high level using a telecom customer churn prediction project as our example.
+
+The actual project is considerably more detailed than what we covered here. In addition to the workflow, it includes extensive data exploration, hyperparameter tuning, model evaluation, explainability using SHAP, and implementation in Python.
+
+If you’d like to explore the complete project, check out the resources below.
+
+GitHub Repository: Explore the complete source code, notebooks, and implementation.
+
+Project Walkthrough: Read a detailed explanation of the project, including the methodology, results, and key insights.
+
+Dataset: Interested in trying the project yourself? Download the dataset used in this article.
+
+Continue Learning
+If you’d like to dive deeper into some of the concepts introduced in this article, here are a few resources that may help.
+
+Data Cleaning Fundamentals
+Data preparation is one of the most important stages of every machine learning project. If you’d like to learn more about handling missing values, duplicates, outliers, and other preprocessing techniques, explore my Data Cleaning Fundamentals series.
+
+Understanding Precision, Recall, and F1 Score
+Model evaluation involves much more than accuracy alone. Learn how precision, recall, and F1-score help measure the performance of classification models through intuitive explanations and practical examples: How We Measure Model Mistakes: Understanding Precision, Recall, and F1 Score.
