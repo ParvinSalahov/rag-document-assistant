@@ -102,4 +102,4 @@ def ask_rag_with_sources(query: str):
         print(f"      Content snippet: {doc.page_content[:100]}...\n")
 
 if __name__ == "__main__":
-    ask_rag_with_sources("What does the DevJoint Intern RAG System do?")
+    ask_rag_with_sources("What is covered in Week 2 of the internship?")

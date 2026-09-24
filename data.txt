@@ -1,1 +1,22 @@
-DevJoint Intern RAG System: This system processes student tasks and generates responses using RAG architecture.
+# DevJoint Intern Program & RAG System Documentation
+
+## 1. Overview
+The DevJoint Intern RAG System is designed to streamline academic and practical tasks for AI Engineering interns. Built on a Retrieval-Augmented Generation (RAG) architecture, it acts as a contextual knowledge assistant that retrieves relevant course documentation, project guidelines, and technical workflows to answer intern queries accurately without hallucination.
+
+## 2. System Architecture & Components
+- Document Loader: Utilizes LangChain's TextLoader to ingest structured and unstructured markdown or text documentation.
+- Text Splitter: Implements RecursiveCharacterTextSplitter with a chunk size of 500 characters and an overlap of 50 characters to maintain semantic context across chunks.
+- Vector Database: Uses Chroma DB to store document embeddings locally.
+- Embedding Model: Leverages OpenAI's text-embedding-3-small via OpenRouter API for efficient vector conversions.
+- Large Language Model: Powered by GPT-4o-Mini via OpenRouter to generate precise answers based strictly on retrieved context.
+
+## 3. Internship Modules & Schedule
+- Week 1: Introduction to LLMs, Prompt Engineering, and API Integrations (OpenRouter, FastAPIs).
+- Week 2: Building RAG Systems, Vector Databases (Chroma), Chunking Strategies, and Source Citation.
+- Week 3: Multi-LLM Evaluation Pipelines, Automated Workflows (Pipedream/Make.com), and Testing.
+- Week 4: Final Capstone Project Presentation and Performance Checkpoint Review.
+
+## 4. Operational Guidelines & Best Practices
+- Temperature Setting: Always set model temperature to 0 for factual QA tasks to avoid hallucinated outputs.
+- Search Parameters: The default retriever searches for top k=2 most relevant document chunks per query.
+- Strict Context Adherence: If a question cannot be answered using the provided context, the system must explicitly state that the information is unavailable rather than generating external assumptions.
